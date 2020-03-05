@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# ShinyAluExplorer
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+A Shiny app to explore DNA methylation age models over Alu repeat elements
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("RichardJActon/ShinyAluExplorer")
+```
+
+## Loading the App
+
+First load the package then start the App:
+
+```{r example}
+library(ShinyAluExplorer)
+shinyAluExplorer()
+## basic example code
+```
+
+Then load the Alu age model data inot the app

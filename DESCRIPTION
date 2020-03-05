@@ -2,12 +2,31 @@ Package: ShinyAluExplorer
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Richard J.",
+           family = "Acton",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           email = "richardjacton@pm.me",
+           comment = c(ORCID = "0000-0002-2574-9611"))
 Description: What the package does (one paragraph).
-License: What license it uses
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Depends:
+    shiny,
+    shinydashboard,
+    ggplot2,
+    annotatr,
+    dplyr
+Imports: 
+    plyranges,
+    tidyr,
+    treemap,
+    d3treeR,
+    plotly,
+    shinybusy,
+    DT,
+    AnnotationHub,
+    tibble,
+    BSgenome.Hsapiens.UCSC.hg19,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    rtracklayer

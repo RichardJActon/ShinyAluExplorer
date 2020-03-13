@@ -349,6 +349,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 
 
 body <- shinydashboard::dashboardBody(
+	shinybusy::add_busy_spinner(spin = "fading-circle"),
 	shinydashboard::tabItems(
 		shinydashboard::tabItem(
 			tabName = "inputdata",
@@ -372,7 +373,6 @@ body <- shinydashboard::dashboardBody(
 			tabName = "main",
 
 			fluidRow(
-				shinybusy::add_busy_spinner(spin = "fading-circle"),
 				shinydashboard::box(
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					title = "Alu Copy Number by Subfamily",

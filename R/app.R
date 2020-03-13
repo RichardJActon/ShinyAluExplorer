@@ -329,6 +329,13 @@ sidebar <- shinydashboard::dashboardSidebar(
 			value = c(0, 100)
 		),
 		actionButton("getCpGdt","Apply CpG Density Range"),
+		sliderInput(
+			"size",
+			"Alu Size Range",
+			min = 1, max = 500,
+			value = c(250, 350)
+		),
+		actionButton("getsize","Apply Alu Size Range"),
 		numericInput(
 			"nsig2showDT",
 			"Num Top Sig Wins in Tab",
@@ -572,6 +579,10 @@ server <- function(input, output) {
 		input$CpGdt
 	}, ignoreNULL = FALSE)
 
+	alusize <- eventReactive(input$getsize, {
+		input$size
+	}, ignoreNULL = FALSE)
+
 	AluAgeModDat <- reactive({
 		slp <- sym(slope())
 		p <- sym(pval())
@@ -587,6 +598,9 @@ server <- function(input, output) {
 			filter({{p}} < pvalthresh()) %>%
 			filter(
 				(CpGdensity > CpGdRange()[1]) & (CpGdensity < CpGdRange()[2])
+			) %>%
+			filter(
+				(AluWidth > alusize()[1]) & (AluWidth < alusize()[2])
 			) %>%
 			ungroup() %>%
 			arrange({{p}})

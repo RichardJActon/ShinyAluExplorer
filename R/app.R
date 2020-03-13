@@ -514,9 +514,9 @@ server <- function(input, output) {
 		}
 		AlusAgeModelRes <- fst::read_fst(input$aluagemoddata$datapath) %>%
 			plyranges::as_granges()
-		seqlevels(
+		GenomeInfoDb::seqlevels(
 			AlusAgeModelRes, pruning.mode = "coarse"
-		) <- seqlevels(Hsapiens)
+		) <- GenomeInfoDb::seqlevels(Hsapiens)
 
 		AlusAgeModelRes
 	})

@@ -105,9 +105,58 @@ AluTreeMap <- function(df, over = NA, log10ed = FALSE, d3 = TRUE) {
 	return(tm)
 }
 
+aluPackedBubblecirc <- function(df) {
+	df %>%
+		mutate(pathString = paste("Alu", subfamily, type, sep = "/")) %>%
+		data.tree::as.Node() %>%
+		circlepackeR::circlepackeR(size = "n")
+}
 
-### aluFeatOver
+# AluPackedBubble <- function(df, over = NA, log10ed = FALSE, pre = "") {
+# 	title <- paste0(
+# 		pre,
+# 		" Alu Copy Number by Subfamily",
+# 		ifelse(is.na(over),"", paste("overlapping ", over)),
+# 		ifelse(log10ed, " (log10 scaled)", "")
+# 	)
+#
+# 	if(log10ed) {
+# 		df <- df %>% mutate(n = log10(n))
+# 	}
+#
+# 	tm <- hpackedbubble::hpackedbubble(
+# 		df$subfamily,
+# 		df$type,
+# 		#df$subtype,
+# 		df$n,
+# 		#pointFormat = "<b>{point.name}:</b> {point.y}m CO<sub>2</sub>",
+# 		title = title,
+# 		split = 1,#1
+# 		#theme = "sunset",
+# 		width = "500px",
+# 		height = "500px",
+# 		dataLabelsFilter = 5,
+# 		packedbubbleMinSize = "50%",
+# 		packedbubbleMaxSize = "150%",
+# 		packedbubbleZMin = 0,
+# 		#packedbubbleZmax = 1000,
+# 		#gravitational = 0.0626,
+# 		gravitational = 0.5,
+# 		parentNodeLimit = 1,
+# 		dragBetweenSeries = 0,
+# 		seriesInteraction = 0
+# 	)
+#
+# 	return(tm)
+# }
 
+aluSunburst <- function(df,...) {
+	df %>%
+		ungroup() %>%
+		mutate(pathString = paste(family, subfamily, type, sep = "-")) %>%
+		dplyr::select(pathString, size = n) %>%
+		sunburstR::sunburst(...)
+}
 
 aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	set <- plyranges::filter_by_overlaps(
@@ -326,6 +375,16 @@ sidebar <- shinydashboard::dashboardSidebar(
 			value = 30
 		),
 		downloadButton("downloadData", "Download"),
+		selectInput(
+			"subfamplotmode",
+			"Alu Subfamily Plot mode",
+			selected = "treemap",
+			choices = list(
+				"treemap" = "treemap",
+				"sunburst" = "sunburst",
+				#"packed bubble 1" = "hpackedbubble",
+				"packed bubble" = "circlepackeR"
+			)
 		)
 	)
 )
@@ -362,7 +421,7 @@ body <- shinydashboard::dashboardBody(
 					title = "Alu Copy Number by Subfamily",
 					"Reflects the number of Alu elements, Not windows over Alu elements",
 					width = 7,
-					d3treeR::d3tree2Output("treemap")
+					htmlOutput("alusubfamplot")
 				),
 				shinydashboard::box(
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",

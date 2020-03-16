@@ -127,6 +127,7 @@ aluSunburst <- function(df,...) {
 		sunburstR::sunburst(...)
 }
 
+### aluFeatOver
 aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	set <- plyranges::filter_by_overlaps(
 		feat,

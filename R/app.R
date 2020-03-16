@@ -127,12 +127,12 @@ nFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 }
 
 problemRegions <- c(
-	"hg19_custom_AluSVs","hg19_custom_hsm-peaks-Bell2017",
+	"hg19_custom_AluSVs", "hg19_custom_hsm-peaks-Bell2017",
 	"hg19_custom_blacklist_Amemiya2019"
 )
 
 hg19annos <- annotatr::builtin_annotations()
-hg19annos <- hg19annos[grepl(hg19annos,pattern = "hg19")]
+hg19annos <- hg19annos[grepl(hg19annos, pattern = "hg19")]
 hg19annos <- c(hg19annos, problemRegions)
 hg19annos
 
@@ -142,17 +142,23 @@ myAnno <- function(feats, annonms, setop = "or") { # "and", "or", "not"
 		setop,
 		"and" = {
 			for (i in seq_along(annonms)) {
-				anb <- annotatr::build_annotations(genome = 'hg19', annotations = annonms[i])
+				anb <- annotatr::build_annotations(
+					genome = 'hg19', annotations = annonms[i]
+				)
 				feats <- plyranges::filter_by_overlaps(feats, anb)
 			}
 			feats
 		},
 		"or" = {
-			annos <- annotatr::build_annotations(genome = 'hg19', annotations = annonms)
+			annos <- annotatr::build_annotations(
+				genome = 'hg19', annotations = annonms
+			)
 			plyranges::filter_by_overlaps(feats, annos)
 		},
 		"not" = {
-			annos <- annotatr::build_annotations(genome = 'hg19', annotations = annonms)
+			annos <- annotatr::build_annotations(
+				genome = 'hg19', annotations = annonms
+			)
 			plyranges::filter_by_non_overlaps(feats, annos)
 		}
 	)
@@ -160,12 +166,8 @@ myAnno <- function(feats, annonms, setop = "or") { # "and", "or", "not"
 }
 
 # myAnno(Alus, "hg19_cpg_islands")
-#
 # myAnno(Alus, c("hg19_cpg_islands", "hg19_genes_promoters"), "and")
-
 # myAnno(Alus, c("hg19_cpg_islands", "hg19_genes_promoters"), "not")
-
-
 
 ## Shiny
 
@@ -245,7 +247,6 @@ AluAgeDT <- function(df, nhead, pval, slp, nltpr) {
 		)
 }
 
-
 ### UI
 
 #### Header
@@ -256,7 +257,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 	shinydashboard::sidebarMenu(
 		shinydashboard::menuItem("Input Data",tabName = "inputdata"),
 		shinydashboard::menuItem(
-			"main",tabName = "main", icon = icon("dashboard")
+			"main", tabName = "main", icon = icon("dashboard")
 		),
 		div("Select Features & p-value threshold"),
 		div("Click buttons to update visualisations"),
@@ -268,7 +269,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 			choices = as.list(c("No Filter", problemRegions)),
 			inputId = "exclude"
 		),
-		actionButton("getexclude","Apply Filters"),
+		actionButton("getexclude", "Apply Filters"),
 		selectInput(
 			multiple = TRUE,
 			selected = "No Filter",
@@ -283,7 +284,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 			choices = c("or", "and"),
 			selected = "or"
 		),
-		actionButton("getannos","Intersect with Annotations"),
+		actionButton("getannos", "Intersect with Annotations"),
 		numericInput(
 			inputId = "pt",
 			label = "p-value Cut-off",
@@ -292,7 +293,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 			max = 1
 		),
 		div(textOutput("formatedp")),
-		actionButton("applyp","Apply P-value Threshold"),
+		actionButton("applyp", "Apply P-value Threshold"),
 		selectInput(
 			#multiple = TRUE,
 			selected = "BB",#"genes"
@@ -312,14 +313,14 @@ sidebar <- shinydashboard::dashboardSidebar(
 			min = 0, max = 100,
 			value = c(0, 100)
 		),
-		actionButton("getCpGdt","Apply CpG Density Range"),
+		actionButton("getCpGdt", "Apply CpG Density Range"),
 		sliderInput(
 			"size",
 			"Alu Size Range",
 			min = 1, max = 500,
 			value = c(250, 350)
 		),
-		actionButton("getsize","Apply Alu Size Range"),
+		actionButton("getsize", "Apply Alu Size Range"),
 		numericInput(
 			"nsig2showDT",
 			"Num Top Sig Wins in Tab",
@@ -446,21 +447,14 @@ body <- shinydashboard::dashboardBody(
 	)
 )
 
-
-
 #### UI Wrapper
-
-
 ui <- shinydashboard::dashboardPage(
 	header,
 	sidebar,
 	body
 )
 
-
 ### Server
-
-
 naluwin <- length(Alus)
 
 server <- function(input, output) {
@@ -510,9 +504,9 @@ server <- function(input, output) {
 		AlusAgeModelRes
 	})
 
-	pval <- reactive({paste0(input$model,"_p")})
-	slope <- reactive({paste0(input$model,"_slope")})
-	neglog10p <- reactive({paste0(input$model,"_neglog10P")})
+	pval <- reactive({paste0(input$model, "_p")})
+	slope <- reactive({paste0(input$model, "_slope")})
+	neglog10p <- reactive({paste0(input$model, "_neglog10P")})
 
 	pvalthresh <- eventReactive(input$applyp, {
 		input$pt

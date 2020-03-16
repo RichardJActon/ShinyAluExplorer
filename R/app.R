@@ -49,13 +49,9 @@ AluColours <- c(
 	"J" = "#568400"
 )
 
-# Functions
-
 ## Functions
 
 ### AluSubFamSplit
-
-
 AluSubFamSplit <- function(alus) {
 	alus %>%
 		tibble::as_tibble() %>%
@@ -73,10 +69,7 @@ AluSubFamSplit <- function(alus) {
 		)
 }
 
-
 ### AluCountByType
-
-
 AluCountByType <- function(alus) {
 	alus %>%
 		dplyr::distinct(aluIndex, .keep_all = TRUE) %>% ###!!!
@@ -85,10 +78,7 @@ AluCountByType <- function(alus) {
 		dplyr::summarise(n = n())
 }
 
-
 ### AluTreeMap
-
-
 AluTreeMap <- function(df, over = NA, log10ed = FALSE, d3 = TRUE) {
 	title <- paste0(
 		" Alu Copy Number by Subfamily",
@@ -127,9 +117,7 @@ aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	AluSubFamSplit(set)
 }
 
-
 ### nFeatOver
-
 nFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	set <- plyranges::filter_by_overlaps(
 		feat,
@@ -137,7 +125,6 @@ nFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	)
 	AluCountByType(set)
 }
-
 
 problemRegions <- c(
 	"hg19_custom_AluSVs","hg19_custom_hsm-peaks-Bell2017",
@@ -262,18 +249,15 @@ AluAgeDT <- function(df, nhead, pval, slp, nltpr) {
 ### UI
 
 #### Header
-
-
 header <- shinydashboard::dashboardHeader(title = "Alu Viewer")
 
-
 #### Sidebar
-
-
 sidebar <- shinydashboard::dashboardSidebar(
 	shinydashboard::sidebarMenu(
 		shinydashboard::menuItem("Input Data",tabName = "inputdata"),
-		shinydashboard::menuItem("main",tabName = "main", icon = icon("dashboard")),
+		shinydashboard::menuItem(
+			"main",tabName = "main", icon = icon("dashboard")
+		),
 		div("Select Features & p-value threshold"),
 		div("Click buttons to update visualisations"),
 		selectInput(
@@ -346,8 +330,6 @@ sidebar <- shinydashboard::dashboardSidebar(
 
 
 #### Body
-
-
 body <- shinydashboard::dashboardBody(
 	shinybusy::add_busy_spinner(spin = "fading-circle"),
 	shinydashboard::tabItems(
@@ -482,7 +464,7 @@ ui <- shinydashboard::dashboardPage(
 naluwin <- length(Alus)
 
 server <- function(input, output) {
-	options(shiny.maxRequestSize = 3000*1024^2)
+	options(shiny.maxRequestSize = 3000 * 1024^2)
 
 	annotatr::read_annotations(
 		system.file(

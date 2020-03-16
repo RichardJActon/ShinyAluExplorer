@@ -324,6 +324,8 @@ sidebar <- shinydashboard::dashboardSidebar(
 			"nsig2showDT",
 			"Num Top Sig Wins in Tab",
 			value = 30
+		),
+		downloadButton("downloadData", "Download"),
 		)
 	)
 )
@@ -754,5 +756,12 @@ server <- function(input, output) {
 		AluAgeModDat() %>%
 			AluAgeDT(input$nsig2showDT, pval(), slope(), neglog10p()),
 		server = TRUE
+	)
+
+	output$downloadData <- downloadHandler(
+		filename = "Alu-Age-Model-Data.csv",
+		content = function(file) {
+			write.csv(AluAgeModDat(), file, row.names = FALSE)
+		}
 	)
 }

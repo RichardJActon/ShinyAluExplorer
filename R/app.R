@@ -179,7 +179,6 @@ AluAgeDT <- function(df, nhead, pval, slp, nltpr) {
 	nltp <- sym(nltpr)
 	## Pre-processing
 	df <- df %>%
-		#arrange({{pval}}) %>%
 		head(nhead) %>%
 		dplyr::mutate(
 			`p-value` = sprintf("%.4e", {{pval}}),
@@ -373,7 +372,7 @@ body <- shinydashboard::dashboardBody(
 			fluidRow(
 				shinydashboard::infoBox(
 					"Age Model Data",
-					"Blood Cell-type and Batch corrected, N = 3001",
+					#"Blood Cell-type and Batch corrected, N = 3001",
 					width = 3
 				),
 				shinydashboard::infoBox(
@@ -388,7 +387,6 @@ body <- shinydashboard::dashboardBody(
 					title = "Direction of Change",
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					width = 6,
-					#plotOutput("slopedensity")
 					plotly::plotlyOutput("slopedensity")
 				),
 				shinydashboard::box(
@@ -397,7 +395,6 @@ body <- shinydashboard::dashboardBody(
 					width = 6,
 					textOutput("AluWideBonfer"),
 					#sprintf("Red = %.3e (0.05 / N windows over all Alus used)", AluWideBonfer),
-					#plotOutput("pvaldensity")
 					plotly::plotlyOutput("pvaldensity")
 				)
 			),
@@ -406,14 +403,12 @@ body <- shinydashboard::dashboardBody(
 					title = "Central Tendancy Of Methylation at Changing Loci",
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					width = 6,
-					#plotOutput("meandensity")
 					plotly::plotlyOutput("meandensity")
 				),
 				shinydashboard::box(
 					title = "CpG density",
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					width = 6,
-					#plotOutput("CpGdensity")
 					plotly::plotlyOutput("CpGdensity")
 				)
 
@@ -423,14 +418,12 @@ body <- shinydashboard::dashboardBody(
 					title = "Alu Element Size Distribution",
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					width = 6,
-					#plotOutput("meandensity")
 					plotly::plotlyOutput("alusize")
 				),
 				shinydashboard::box(
 					title = "Alu Strand",
 					solidHeader = TRUE, collapsible = TRUE, status = "primary",
 					width = 6,
-					#plotOutput("CpGdensity")
 					plotly::plotlyOutput("alustrand")
 				)
 
@@ -626,19 +619,31 @@ server <- function(input, output) {
 	})
 
 	AluCounts <- reactive({
-		AluAgeModDat() %>%
-			#filteredAlus() %>%
-			AluCountByType()
+		AluAgeModDat() %>% AluCountByType()
 	})
 
-	tm <- reactive({
-		AluCounts() %>%
-			AluTreeMap()
+	output$alusubfamplot <- renderUI({
+		switch(
+			input$subfamplotmode,
+			"treemap" = d3treeR::d3tree2Output("aluplot_treemap"),
+			"circlepackeR" = circlepackeR::circlepackeROutput("aluplot_circlepackeR"),
+			"sunburst" = sunburstR::sunburstOutput("aluplot_sunburstR")#,
+			#"hpackedbubble" = hpackedbubble::hpackedbubbleOutput("aluplot_hpackedbubble")
+		)
 	})
 
-	output$treemap <- d3treeR::renderD3tree2({
-		tm()
+	output$aluplot_treemap <- d3treeR::renderD3tree2({
+		AluCounts() %>% AluTreeMap()
 	})
+	output$aluplot_circlepackeR <- circlepackeR::renderCirclepackeR({
+		AluCounts() %>% aluPackedBubblecirc()
+	})
+	output$aluplot_sunburstR <- sunburstR::renderSunburst({
+		AluCounts() %>% aluSunburst()
+	})
+	# output$aluplot_hpackedbubble <- hpackedbubble::renderHpackedbubble({
+	# 	AluCounts() %>% AluPackedBubble()
+	# })
 
 	output$genomeBrowser <- renderText({
 		idx <- input$table_rows_selected
@@ -659,7 +664,6 @@ server <- function(input, output) {
 	})
 
 	# Age model density plots
-	#output$slopedensity <- renderPlot({
 	output$slopedensity <- plotly::renderPlotly({
 		slp <- sym(slope())
 		plot <- AluAgeModDat() %>%
@@ -675,7 +679,6 @@ server <- function(input, output) {
 		plot %>% plotly::ggplotly(dynamicTicks = TRUE, height = 400)
 	})
 
-	#output$pvaldensity <- renderPlot({
 	output$pvaldensity <- plotly::renderPlotly({
 		nltp <- sym(neglog10p())
 		plot <- AluAgeModDat() %>%
@@ -693,7 +696,6 @@ server <- function(input, output) {
 		plot %>% plotly::ggplotly(dynamicTicks = TRUE, height = 400)
 	})
 
-	#output$meandensity <- renderPlot({
 	output$meandensity <- plotly::renderPlotly({
 		plot <- AluAgeModDat() %>%
 			ggplot(aes(median, colour = subfamily)) +
@@ -707,7 +709,6 @@ server <- function(input, output) {
 		plot %>% plotly::ggplotly(dynamicTicks = TRUE, height = 400)
 	})
 
-	#output$CpGdensity <- renderPlot({
 	output$CpGdensity <- plotly::renderPlotly({
 		plot <- AluAgeModDat() %>%
 			ggplot(aes(CpGdensity, fill = subfamily)) +
@@ -748,7 +749,7 @@ server <- function(input, output) {
 				)
 		plot %>% plotly::ggplotly(height = 400)
 	})
-	#
+
 	output$table <- DT::renderDataTable(
 		AluAgeModDat() %>%
 			AluAgeDT(input$nsig2showDT, pval(), slope(), neglog10p()),

@@ -6,37 +6,6 @@ Alus <- readRDS(system.file(
 
 hub <- AnnotationHub::AnnotationHub()
 
-# annotatr::read_annotations(
-# 	system.file(
-# 		"extdata", "hg19-blacklist.v2.bed.gz", package = "ShinyAluExplorer"
-# 	),
-# 	#"inst/extdata/hg19-blacklist.v2.bed.gz",
-# 	genome = "hg19",
-# 	name = "blacklist_Amemiya2019",
-# 	format = "bed"
-# )
-#
-# annotatr::read_annotations(
-# 	system.file(
-# 		"extdata", "Supplementary_File1_mergeFinal_hsm_nh.bed",
-# 		package = "ShinyAluExplorer"
-# 	),
-# 	#"inst/extdata/Supplementary_File1_mergeFinal_hsm_nh.bed",
-# 	genome = "hg19",
-# 	name = "hsm-peaks-Bell2017",
-# 	format = "bed"
-# )
-#
-# annotatr::read_annotations(
-# 	system.file(
-# 		"extdata", "ALL.wgs.mergedSV.v8.20130502.svs.genotypes.bed",
-# 		package = "ShinyAluExplorer"
-# 	),
-# 	genome = "hg19",
-# 	name = "AluSVs",
-# 	format = "bed"
-# )
-
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene::TxDb.Hsapiens.UCSC.hg19.knownGene
 Hsapiens <- BSgenome.Hsapiens.UCSC.hg19::Hsapiens
 

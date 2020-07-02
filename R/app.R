@@ -1,4 +1,4 @@
-# Data
+# Data ------------------------------------------------------------------------
 
 Alus <- readRDS(system.file(
 	"extdata", "AlusObj.Rds", package = "ShinyAluExplorer"
@@ -18,9 +18,9 @@ AluColours <- c(
 	"J" = "#568400"
 )
 
-## Functions
+## | Functions ----------------------------------------------------------------
 
-### AluSubFamSplit
+### || AluSubFamSplit ---------------------------------------------------------
 AluSubFamSplit <- function(alus) {
 	alus %>%
 		tibble::as_tibble() %>%
@@ -38,7 +38,7 @@ AluSubFamSplit <- function(alus) {
 		)
 }
 
-### AluCountByType
+### || AluCountByType ---------------------------------------------------------
 AluCountByType <- function(alus) {
 	alus %>%
 		dplyr::distinct(aluIndex, .keep_all = TRUE) %>% ###!!!
@@ -47,7 +47,7 @@ AluCountByType <- function(alus) {
 		dplyr::summarise(n = n())
 }
 
-### AluTreeMap
+### || AluTreeMap -------------------------------------------------------------
 AluTreeMap <- function(df, over = NA, log10ed = FALSE, d3 = TRUE) {
 	title <- paste0(
 		" Alu Copy Number by Subfamily",
@@ -118,7 +118,7 @@ aluPackedBubblecirc <- function(df) {
 #
 # 	return(tm)
 # }
-
+### || aluSunburst ------------------------------------------------------------
 aluSunburst <- function(df,...) {
 	df %>%
 		ungroup() %>%
@@ -127,8 +127,8 @@ aluSunburst <- function(df,...) {
 		sunburstR::sunburst(...)
 }
 
-### aluFeatOver
-aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
+### || aluFeatOver ------------------------------------------------------------
+aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L) {
 	set <- plyranges::filter_by_overlaps(
 		feat,
 		accessor(txdb)
@@ -136,14 +136,16 @@ aluFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
 	AluSubFamSplit(set)
 }
 
-### nFeatOver
-nFeatOver <- function(feat, txdb, accessor, minoverlap = 0L){
+### || nFeatOver --------------------------------------------------------------
+nFeatOver <- function(feat, txdb, accessor, minoverlap = 0L) {
 	set <- plyranges::filter_by_overlaps(
 		feat,
 		accessor(txdb)
 	)
 	AluCountByType(set)
 }
+
+### || Annotations ------------------------------------------------------------
 
 problemRegions <- c(
 	"hg19_custom_AluSVs", "hg19_custom_hsm-peaks-Bell2017",
@@ -188,9 +190,9 @@ myAnno <- function(feats, annonms, setop = "or") { # "and", "or", "not"
 # myAnno(Alus, c("hg19_cpg_islands", "hg19_genes_promoters"), "and")
 # myAnno(Alus, c("hg19_cpg_islands", "hg19_genes_promoters"), "not")
 
-## Shiny
+# Shiny -----------------------------------------------------------------------
 
-### DT format
+## | DT format ----------------------------------------------------------------
 
 AluAgeDT <- function(df, nhead, pval, slp, nltpr) {
 	slp <- sym(slp)
@@ -265,12 +267,12 @@ AluAgeDT <- function(df, nhead, pval, slp, nltpr) {
 		)
 }
 
-### UI
+## | UI -----------------------------------------------------------------------
 
-#### Header
+### || Header -----------------------------------------------------------------
 header <- shinydashboard::dashboardHeader(title = "Alu Viewer")
 
-#### Sidebar
+### || Sidebar ----------------------------------------------------------------
 sidebar <- shinydashboard::dashboardSidebar(
 	shinydashboard::sidebarMenu(
 		shinydashboard::menuItem("Input Data",tabName = "inputdata"),
@@ -360,7 +362,7 @@ sidebar <- shinydashboard::dashboardSidebar(
 )
 
 
-#### Body
+### || Body -------------------------------------------------------------------
 body <- shinydashboard::dashboardBody(
 	shinybusy::add_busy_spinner(spin = "fading-circle"),
 	shinydashboard::tabItems(
@@ -471,14 +473,14 @@ body <- shinydashboard::dashboardBody(
 	)
 )
 
-#### UI Wrapper
+### || UI Wrapper -------------------------------------------------------------
 ui <- shinydashboard::dashboardPage(
 	header,
 	sidebar,
 	body
 )
 
-### Server
+## | Server -------------------------------------------------------------------
 naluwin <- length(Alus)
 
 server <- function(input, output) {
